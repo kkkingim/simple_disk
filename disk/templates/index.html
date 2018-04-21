@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js" charset="utf-8"></script>
+  <script src="https://ciphertrick.com/demo/jquerysession/js/jquerysession.js" charset="utf-8"></script>
+  <title>{{ di }}</title>
+  <style>
+    a:link {
+      font-size: 20px;
+      color: cornflowerblue;
+      text-decoration: none;
+    }
+
+    a:visited {
+      font-size: 20px;
+      color: cornflowerblue;
+      text-decoration: none;
+    }
+
+    a:hover {
+      font-size: 20px;
+      color: #211e90;
+      text-decoration: underline;
+    }
+
+  </style>
+  <script>
+    $(function() {
+      var p = $("body>h2").text();
+      $.session.set("p", p);
+    });
+
+    function pt(act) {
+      if (act == "del") { //删除文件
+        var ls = [];
+        var i;
+        var cs = $(":input[name='delitem']");
+        for (var i = 0; i < cs.length; i++) {
+          if ($(cs[i]).prop('checked')){
+            ls.push(cs[i].value);
+          }
+        }
+        var jsonstring = JSON.stringify(ls);
+        $.post('/diskact',
+         {
+           delitem:jsonstring
+         },
+        function(data, textStatus, xhr) {
+          $("body").empty()
+          var s = "<body>" + data + "<br />"
+          s += '<input type="button" value="删除" onclick="pt(' + "'del'" + ')"><input type="button" value="上传" onclick="pt(' + "'upload'" + ')"></body>'
+          $("body").append(s)
+        });
+
+        }
+
+      if (act == "upload") { //上传
+        var str = window.showModalDialog('static/upload.html');
+        window.location.reload();
+      }
+    }
+  </script>
+</head>
+
+<body>
+  {{ cc|safe }}
+
+  <br />
+  <input type="button" value="删除" onclick="pt('del')">
+  <input type="button" value="上传" onclick="pt('upload')">
+</body>
+
+</html>
